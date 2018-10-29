@@ -45,7 +45,7 @@ var (
 )
 
 func init() {
-	fmt.Printf("%q\n", "this is init!")
+	fmt.Fprintln(os.Stderr,"%q\n", "this is init!")
 	flag.BoolVar(&debugFlag, "debug", false, "enable debug output in logs")
 	flag.StringVar(&namespaceFlag, "namespace", "", "namespace that owns the shim")
 	flag.StringVar(&socketFlag, "socket", "", "abstract socket path to serve")
@@ -62,7 +62,7 @@ func init() {
 
 func main() {
 	debug.SetGCPercent(10)
-	fmt.Printf("%q\n", "this is main!")
+	fmt.Fprintln(os.Stderr,"%q\n", "this is main!")
 	go func() {
 		for range time.Tick(30 * time.Second) {
 			debug.FreeOSMemory()
@@ -88,7 +88,7 @@ func main() {
 func executeShim() error {
 	// start handling signals as soon as possible so that things are properly reaped
 	// or if runtime exits before we hit the handler
-	fmt.Printf("%q\n", "this is executeShim!")
+	fmt.Fprintln(os.Stderr,"%q\n", "this is executeShim!")
 	signals, err := setupSignals()
 	if err != nil {
 		return err
@@ -141,7 +141,7 @@ func executeShim() error {
 // serve serves the ttrpc API over a unix socket at the provided path
 // this function does not block
 func serve(server *ttrpc.Server, path string) error {
-	fmt.Printf("%q\n", "this is serve!")
+	fmt.Fprintln(os.Stderr,"%q\n", "this is serve!")
 	var (
 		l   net.Listener
 		err error
@@ -167,7 +167,7 @@ func serve(server *ttrpc.Server, path string) error {
 }
 
 func handleSignals(logger *logrus.Entry, signals chan os.Signal, server *ttrpc.Server, sv *shim.Service) error {
-	fmt.Printf("%q\n", "this is handleSignals!")
+	fmt.Fprintln(os.Stderr,"%q\n", "this is handleSignals!")
 	var (
 		termOnce sync.Once
 		done     = make(chan struct{})
@@ -203,7 +203,7 @@ func handleSignals(logger *logrus.Entry, signals chan os.Signal, server *ttrpc.S
 }
 
 func dumpStacks(logger *logrus.Entry) {
-	fmt.Printf("%q\n", "this is dumpStacks!")
+	fmt.Fprintln(os.Stderr,"%q\n", "this is dumpStacks!")
 	var (
 		buf       []byte
 		stackSize int
@@ -223,7 +223,7 @@ type remoteEventsPublisher struct {
 }
 
 func (l *remoteEventsPublisher) Publish(ctx context.Context, topic string, event events.Event) error {
-	fmt.Printf("%q\n", "this is Publish!")
+	fmt.Fprintln(os.Stderr,"%q\n", "this is Publish!")
 	ns, _ := namespaces.Namespace(ctx)
 	encoded, err := typeurl.MarshalAny(event)
 	if err != nil {
